@@ -74,6 +74,12 @@ module GreenhouseIo
       patch_harvest_api "/candidates/#{id}", options
     end
 
+    def eeoc(id = nil, options = {})
+      url = id.nil? ? "/eeoc" : "applications/#{id}/eeoc"
+
+      get_from_harvest_api(url, options)
+    end
+
     private
 
     def path_id(id = nil)
@@ -81,7 +87,7 @@ module GreenhouseIo
     end
 
     def permitted_options(options)
-      options.select { |key, value| PERMITTED_OPTIONS.include? key }
+      options.select { |key, _value| PERMITTED_OPTIONS.include? key }
     end
 
     def get_from_harvest_api(url, options = {})
@@ -100,7 +106,7 @@ module GreenhouseIo
       response = patch_response(url,
                                 body: permitted_options(options).to_json,
                                 basic_auth: basic_auth,
-                                headers: { "On-Behalf-Of": on_behalf_of})
+                                headers: { "On-Behalf-Of" => on_behalf_of})
 
       set_headers_info(response.headers)
       if response.code == 200
