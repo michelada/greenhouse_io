@@ -3,7 +3,8 @@ module GreenhouseIo
     include HTTMultiParty
     include GreenhouseIo::API
 
-    PERMITTED_OPTIONS = [:page, :per_page, :job_id, :tags, :created_after, :updated_after, :last_activity_after]
+    PERMITTED_OPTIONS = %i(page per_page job_id tags created_after updated_after last_activity_after
+                          since_id submitted_before submitted_after)
 
     attr_accessor :api_token, :rate_limit, :rate_limit_remaining, :link
     base_uri 'https://harvest.greenhouse.io/v1'
@@ -74,10 +75,14 @@ module GreenhouseIo
       patch_harvest_api "/candidates/#{id}", options
     end
 
-    def eeoc(id = nil, options = {})
-      url = id.nil? ? "/eeoc" : "applications/#{id}/eeoc"
+    def eeoc(options = {})
+      get_from_harvest_api "/eeoc", options
+    end
 
-      get_from_harvest_api(url, options)
+    def application_eeoc(application_id)
+      url = "applications/#{application_id}/eeoc"
+
+      get_from_harvest_api(url)
     end
 
     private
